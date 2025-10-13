@@ -1,288 +1,67 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Musical Water Ripples</title>
-<style>
-  body {
-    margin: 0;
-    overflow: hidden;
-    background: radial-gradient(circle at center, #003366 0%, #000814 100%);
-    font-family: sans-serif;
-  }
-  h1 {
-    position: absolute;
-    top: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    color: white;
-    text-shadow: 0 0 10px #000;
-    z-index: 10;
-  }
-  .info {
-    position: absolute;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    color: rgba(255,255,255,0.7);
-    font-size: 14px;
-    text-align: center;
-    z-index: 10;
-  }
-  canvas {
-    display: block;
-  }
-</style>
-</head>
-<body>
-  <h1>Musical Water Ripples</h1>
-  <div class="info">Press A-Z keys or click to create ripples with sounds</div>
-  <canvas id="pond"></canvas>
-  <script>
-    const canvas = document.getElementById('pond');
-    const ctx = canvas.getContext('2d');
-    let width = canvas.width = window.innerWidth;
-    let height = canvas.height = window.innerHeight;
-    
-    window.addEventListener('resize', () => {
-      width = canvas.width = window.innerWidth;
-      height = canvas.height = window.innerHeight;
-    });
-    
-    const ripples = [];
-    
-    // Audio context for generating sounds
-    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    
-    // Musical notes (frequencies in Hz)
-    const notes = {
-      A: 261.63, // C4
-      B: 293.66, // D4
-      C: 329.63, // E4
-      D: 349.23, // F4
-      E: 392.00, // G4
-      F: 440.00, // A4
-      G: 493.88, // B4
-      H: 523.25, // C5
-      I: 587.33, // D5
-      J: 659.25, // E5
-      K: 698.46, // F5
-      L: 783.99, // G5
-      M: 880.00, // A5
-      N: 987.77, // B5
-      O: 1046.50, // C6
-      P: 293.66, // D4
-      Q: 329.63, // E4
-      R: 349.23, // F4
-      S: 392.00, // G4
-      T: 440.00, // A4
-      U: 493.88, // B4
-      V: 523.25, // C5
-      W: 587.33, // D5
-      X: 659.25, // E5
-      Y: 698.46, // F5
-      Z: 783.99  // G5
-    };
-    
-    // Different ripple configurations for each key
-    const rippleTypes = {
-      A: { color: 'rgba(255,100,100', speed: 2, intensity: 0.9, rings: 3, pattern: 'burst' },
-      B: { color: 'rgba(255,150,100', speed: 2.5, intensity: 0.8, rings: 5, pattern: 'smooth' },
-      C: { color: 'rgba(255,200,100', speed: 3, intensity: 0.7, rings: 4, pattern: 'ripple' },
-      D: { color: 'rgba(255,255,100', speed: 2.2, intensity: 0.85, rings: 6, pattern: 'wave' },
-      E: { color: 'rgba(200,255,100', speed: 2.8, intensity: 0.75, rings: 5, pattern: 'burst' },
-      F: { color: 'rgba(100,255,100', speed: 3.2, intensity: 0.8, rings: 4, pattern: 'smooth' },
-      G: { color: 'rgba(100,255,200', speed: 2.6, intensity: 0.9, rings: 7, pattern: 'ripple' },
-      H: { color: 'rgba(100,255,255', speed: 2.4, intensity: 0.7, rings: 5, pattern: 'wave' },
-      I: { color: 'rgba(100,200,255', speed: 2.9, intensity: 0.85, rings: 4, pattern: 'burst' },
-      J: { color: 'rgba(100,150,255', speed: 3.1, intensity: 0.75, rings: 6, pattern: 'smooth' },
-      K: { color: 'rgba(100,100,255', speed: 2.3, intensity: 0.8, rings: 5, pattern: 'ripple' },
-      L: { color: 'rgba(150,100,255', speed: 2.7, intensity: 0.9, rings: 4, pattern: 'wave' },
-      M: { color: 'rgba(200,100,255', speed: 3.0, intensity: 0.7, rings: 7, pattern: 'burst' },
-      N: { color: 'rgba(255,100,255', speed: 2.5, intensity: 0.85, rings: 5, pattern: 'smooth' },
-      O: { color: 'rgba(255,100,200', speed: 2.8, intensity: 0.75, rings: 6, pattern: 'ripple' },
-      P: { color: 'rgba(255,150,150', speed: 2.4, intensity: 0.8, rings: 4, pattern: 'wave' },
-      Q: { color: 'rgba(150,255,150', speed: 2.6, intensity: 0.9, rings: 5, pattern: 'burst' },
-      R: { color: 'rgba(150,150,255', speed: 3.2, intensity: 0.7, rings: 6, pattern: 'smooth' },
-      S: { color: 'rgba(255,255,150', speed: 2.2, intensity: 0.85, rings: 4, pattern: 'ripple' },
-      T: { color: 'rgba(150,255,255', speed: 2.9, intensity: 0.75, rings: 7, pattern: 'wave' },
-      U: { color: 'rgba(255,150,255', speed: 2.7, intensity: 0.8, rings: 5, pattern: 'burst' },
-      V: { color: 'rgba(200,200,100', speed: 2.5, intensity: 0.9, rings: 4, pattern: 'smooth' },
-      W: { color: 'rgba(100,200,200', speed: 3.0, intensity: 0.7, rings: 6, pattern: 'ripple' },
-      X: { color: 'rgba(200,100,200', speed: 2.8, intensity: 0.85, rings: 5, pattern: 'wave' },
-      Y: { color: 'rgba(255,200,150', speed: 2.3, intensity: 0.75, rings: 4, pattern: 'burst' },
-      Z: { color: 'rgba(150,200,255', speed: 3.1, intensity: 0.8, rings: 7, pattern: 'smooth' },
-      default: { color: 'rgba(0,150,255', speed: 2.5, intensity: 0.7, rings: 5, pattern: 'ripple' }
-    };
-    
-    // Play sound for the key
-    function playSound(frequency, duration = 0.5) {
-      const oscillator = audioCtx.createOscillator();
-      const gainNode = audioCtx.createGain();
-      
-      oscillator.connect(gainNode);
-      gainNode.connect(audioCtx.destination);
-      
-      oscillator.frequency.value = frequency;
-      oscillator.type = 'sine';
-      
-      gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime);
-      gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
-      
-      oscillator.start(audioCtx.currentTime);
-      oscillator.stop(audioCtx.currentTime + duration);
-    }
-    
-    class Ripple {
-      constructor(x, y, config) {
-        this.x = x;
-        this.y = y;
-        this.time = 0;
-        this.maxTime = 180;
-        this.color = config.color;
-        this.speed = config.speed;
-        this.intensity = config.intensity;
-        this.pattern = config.pattern;
-        this.rings = [];
-        
-        // Create rings based on configuration
-        for (let i = 0; i < config.rings; i++) {
-          this.rings.push({
-            delay: i * (this.pattern === 'burst' ? 4 : 8),
-            offset: i * 0.3
-          });
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Letters</title>
+  </head>
+  <body>
+    <h1>Letters: Dun Ya Derks</h1>
+    <p>We write from left to right but why?</p>
+    <p>How are you doing?</p>
+    <div id="output"></div>
+    <script>
+      // find the #output element
+        const outputEl = document.getElementById("output");
+     // Utility: make an element, set a few attributes, append to #output
+      function addDomElement(tag, attrs) {
+        const el = document.createElement(tag);
+      if (attrs) {
+       for (const k in attrs) {
+          if (k === "text") {
+           el.textContent = attrs[k];
+        } else {
+          el.setAttribute(k, attrs[k]);
         }
       }
-      
-      update() {
-        this.time++;
+    }
+    outputEl.appendChild(el);
+    return el;
+  }
+      // Setup of sound function:
+      function playSound(url) {
+        const audio = new Audio(url);
+        audio.play();
       }
-      
-      draw() {
-        this.rings.forEach(ring => {
-          const ringTime = this.time - ring.delay;
-          if (ringTime < 0) return;
-          
-          const ringProgress = ringTime / this.maxTime;
-          const radius = ringTime * this.speed;
-          
-          // Different alpha decay based on pattern
-          let alpha;
-          switch(this.pattern) {
-            case 'burst':
-              alpha = Math.max(0, (1 - ringProgress * 1.5) * this.intensity);
-              break;
-            case 'smooth':
-              alpha = Math.max(0, (1 - ringProgress) * this.intensity * Math.exp(-ringProgress * 1.5));
-              break;
-            case 'wave':
-              alpha = Math.max(0, (1 - ringProgress) * this.intensity * (1 + Math.sin(ringProgress * Math.PI * 4) * 0.3));
-              break;
-            default: // ripple
-              alpha = Math.max(0, (1 - ringProgress) * this.intensity * Math.exp(-ringProgress * 2));
-          }
-          
-          // Different amplitude based on pattern
-          let amplitude;
-          switch(this.pattern) {
-            case 'burst':
-              amplitude = 4 * (1 - ringProgress) * Math.sin(ringProgress * Math.PI * 2);
-              break;
-            case 'smooth':
-              amplitude = 2 * (1 - ringProgress);
-              break;
-            case 'wave':
-              amplitude = 3 * (1 - ringProgress) * Math.abs(Math.sin(ringProgress * Math.PI * 6));
-              break;
-            default: // ripple
-              amplitude = 3 * (1 - ringProgress) * Math.sin(ringProgress * Math.PI);
-          }
-          
-          // Draw main ring (ensure radius is positive)
-          if (radius > 0) {
-            ctx.beginPath();
-            ctx.arc(this.x, this.y, radius, 0, Math.PI * 2);
-            ctx.strokeStyle = `${this.color},${alpha * 0.8})`;
-            ctx.lineWidth = Math.max(0.5, amplitude);
-            ctx.stroke();
-          }
-          
-          // Add highlights and shadows for depth
-          if (amplitude > 1 && radius > amplitude * 0.5) {
-            const innerRadius = radius - amplitude * 0.5;
-            const outerRadius = radius + amplitude * 0.5;
-            
-            if (innerRadius > 0) {
-              ctx.beginPath();
-              ctx.arc(this.x, this.y, innerRadius, 0, Math.PI * 2);
-              ctx.strokeStyle = `rgba(255,255,255,${alpha * 0.3})`;
-              ctx.lineWidth = 1;
-              ctx.stroke();
-            }
-            
-            if (outerRadius > 0) {
-              ctx.beginPath();
-              ctx.arc(this.x, this.y, outerRadius, 0, Math.PI * 2);
-              ctx.strokeStyle = `rgba(0,0,50,${alpha * 0.4})`;
-              ctx.lineWidth = 1;
-              ctx.stroke();
-            }
-          }
+      // Listen for keydown events
+        document.addEventListener("keydown", function(event) {
+          console.log("Key pressed:", event.key);
+      // if key is backspace...
+        if (event.key === "Backspace") {
+          if (outputEl.lastChild) {
+           outputEl.removeChild(outputEl.lastChild);
+        }
+      } else if (event.key === "d" || event.key === "D") {
+        addDomElement("span", { text: "BARK!" });
+      } else if (event.key === "c" || event.key === "C") {
+        addDomElement("img", { 
+    src: "https://media2.giphy.com/media/v1.Y2lkPTZjMDliOTUyeTcyNHM4b3Mya3pmczY5MDBldW4zcDE2dGFsYjFvdjBka2RuNGRvdiZlcD12MV9naWZzX3NlYXJjaCZjdT1n/3vcHdyb75qRIA/200w.gif" 
+  });
+      } else if (event.key === "v" || event.key === "V") {
+          addDomElement("video", {
+          src: "https://i.imgur.com/Pj87n9Q.mp4",
+          width: "300",
+          height: "300",
+          autoplay: "true",
+          muted: "",
+          controls: "" 
         });
-      }
-      
-      isDead() {
-        return this.time >= this.maxTime;
-      }
+      } else if (event.key === "s" || event.key === "S") {
+        playSound("https://actions.google.com/sounds/v1/cartoon/cartoon_boing.ogg");
+        addDomElement("span", { text: "(sound played)" });
+      } else {
+        addDomElement("span", { text: event.key });
     }
-    
-    // Create ripple when a letter is pressed
-    document.addEventListener('keydown', e => {
-      const letter = e.key.toUpperCase();
-      if (!/^[A-Z]$/.test(letter)) return;
-      
-      // Play sound
-      const frequency = notes[letter];
-      playSound(frequency);
-      
-      const config = rippleTypes[letter] || rippleTypes.default;
-      
-      // Random position for each drop
-      const x = Math.random() * width;
-      const y = Math.random() * height * 0.7 + height * 0.15;
-      
-      ripples.push(new Ripple(x, y, config));
-    });
-    
-    // Click to create ripples
-    canvas.addEventListener('click', e => {
-      // Play middle C for clicks
-      playSound(523.25);
-      
-      const config = rippleTypes.default;
-      ripples.push(new Ripple(e.clientX, e.clientY, config));
-    });
-    
-    function animate() {
-      // Gentle fade for trail effect
-      ctx.fillStyle = 'rgba(0, 20, 50, 0.15)';
-      ctx.fillRect(0, 0, width, height);
-      
-      // Update and draw all ripples
-      for (let i = ripples.length - 1; i >= 0; i--) {
-        ripples[i].update();
-        ripples[i].draw();
-        
-        if (ripples[i].isDead()) {
-          ripples.splice(i, 1);
-        }
-      }
-      
-      requestAnimationFrame(animate);
-    }
-    
-    animate();
-  </script>
-</body>
+  });
+    </script>
+  </body>
 </html>
