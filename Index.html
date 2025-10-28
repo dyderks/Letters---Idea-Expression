@@ -37,7 +37,7 @@
 </head>
 <body>
   <h1>Musical Water Ripples</h1>
-  <div class="info">Press A-Z keys or click to create ripples with sounds</div>
+  <div class="info">Welcome to the symphony of the ocean!</div>
   <canvas id="pond"></canvas>
   <script>
     const canvas = document.getElementById('pond');
@@ -134,6 +134,217 @@
       oscillator.stop(audioCtx.currentTime + duration);
     }
     
+    // Play a chord (multiple notes at once)
+    function playChord(frequencies, duration = 0.8) {
+      frequencies.forEach(freq => {
+        playSound(freq, duration);
+      });
+    }
+    
+    // Easter egg: Wave effect
+    function triggerWave() {
+      playChord([261.63, 329.63, 392.00, 493.88, 659.25], 1.5);
+      
+      const waveConfig = {
+        color: 'rgba(100,200,255',
+        speed: 4,
+        intensity: 1.1,
+        rings: 10,
+        pattern: 'wave'
+      };
+      
+      // Create a wave that sweeps across the screen
+      for (let i = 0; i < 15; i++) {
+        setTimeout(() => {
+          const x = (i / 14) * width;
+          const y = height / 2 + Math.sin(i * 0.5) * 100;
+          ripples.push(new Ripple(x, y, waveConfig));
+        }, i * 80);
+      }
+    }
+    
+    // Easter egg: Storm effect
+    function triggerStorm() {
+      playChord([392.00, 523.25, 659.25], 0.3);
+      
+      const stormDuration = 3000; // 3 seconds
+      const interval = 150;
+      let elapsed = 0;
+      
+      const stormInterval = setInterval(() => {
+        if (elapsed >= stormDuration) {
+          clearInterval(stormInterval);
+          return;
+        }
+        
+        // Random ripple
+        const x = Math.random() * width;
+        const y = Math.random() * height;
+        const randomLetter = String.fromCharCode(65 + Math.floor(Math.random() * 26));
+        const config = rippleTypes[randomLetter] || rippleTypes.default;
+        
+        ripples.push(new Ripple(x, y, config));
+        
+        // Random sound
+        const randomNote = Object.values(notes)[Math.floor(Math.random() * 26)];
+        playSound(randomNote, 0.2);
+        
+        elapsed += interval;
+      }, interval);
+    }
+    
+    // Easter egg: Current effect
+    function triggerCurrent() {
+      playChord([261.63, 293.66, 329.63], 2.0);
+      
+      const currentConfig = {
+        color: 'rgba(50,150,255',
+        speed: 3,
+        intensity: 0.8,
+        rings: 8,
+        pattern: 'wave'
+      };
+      
+      // Create horizontal flowing current
+      const numWaves = 5;
+      for (let wave = 0; wave < numWaves; wave++) {
+        for (let i = 0; i < 20; i++) {
+          setTimeout(() => {
+            const x = (i / 19) * width;
+            const y = (wave / numWaves) * height + height * 0.1;
+            ripples.push(new Ripple(x, y, currentConfig));
+          }, i * 50 + wave * 200);
+        }
+      }
+    }
+    
+    // Easter egg: Tsunami effect
+    function triggerTsunami() {
+      playChord([130.81, 164.81, 196.00], 3.0); // Deep low notes
+      
+      const tsunamiConfig = {
+        color: 'rgba(0,100,200',
+        speed: 6,
+        intensity: 1.5,
+        rings: 15,
+        pattern: 'wave'
+      };
+      
+      // Giant wave sweeping across
+      for (let i = 0; i < 25; i++) {
+        setTimeout(() => {
+          const x = (i / 24) * width;
+          // Create multiple vertical ripples for height
+          for (let j = 0; j < 3; j++) {
+            const y = height * 0.3 + j * 50 + Math.sin(i * 0.3) * 80;
+            ripples.push(new Ripple(x, y, tsunamiConfig));
+          }
+        }, i * 60);
+      }
+    }
+    
+    // Easter egg: Tornado effect
+    function triggerTornado() {
+      playChord([440.00, 554.37, 659.25, 880.00], 2.5);
+      
+      const tornadoConfig = {
+        color: 'rgba(150,150,255',
+        speed: 3.5,
+        intensity: 1.0,
+        rings: 7,
+        pattern: 'burst'
+      };
+      
+      const centerX = width / 2;
+      const centerY = height / 2;
+      const numRipples = 40;
+      const spiralTurns = 4;
+      
+      // Create spiral pattern
+      for (let i = 0; i < numRipples; i++) {
+        setTimeout(() => {
+          const angle = (i / numRipples) * Math.PI * 2 * spiralTurns;
+          const radius = (i / numRipples) * Math.min(width, height) * 0.4;
+          const x = centerX + Math.cos(angle) * radius;
+          const y = centerY + Math.sin(angle) * radius;
+          ripples.push(new Ripple(x, y, tornadoConfig));
+        }, i * 40);
+      }
+    }
+    
+    // Easter egg: Deep effect
+    function triggerDeep() {
+      // Very low, deep notes
+      playChord([65.41, 82.41, 98.00], 2.5);
+      
+      const deepConfig = {
+        color: 'rgba(10,20,60',
+        speed: 2,
+        intensity: 1.2,
+        rings: 12,
+        pattern: 'smooth'
+      };
+      
+      const centerX = width / 2;
+      const centerY = height / 2;
+      
+      // Create expanding dark ripples from center
+      for (let i = 0; i < 8; i++) {
+        setTimeout(() => {
+          ripples.push(new Ripple(centerX, centerY, deepConfig));
+        }, i * 150);
+      }
+    }
+    
+    // Easter egg: Coral effect
+    function triggerCoral() {
+      playChord([523.25, 659.25, 783.99, 1046.50], 2.0);
+      
+      const coralConfig = {
+        color: 'rgba(255,200,100',
+        speed: 1.8,
+        intensity: 0.9,
+        rings: 10,
+        pattern: 'burst'
+      };
+      
+      // Create coral-like branching pattern
+      const centerX = width / 2;
+      const centerY = height * 0.7;
+      const branches = 8;
+      
+      for (let branch = 0; branch < branches; branch++) {
+        const angle = (branch / branches) * Math.PI * 2;
+        
+        for (let i = 0; i < 6; i++) {
+          setTimeout(() => {
+            const distance = i * 40;
+            const x = centerX + Math.cos(angle) * distance;
+            const y = centerY + Math.sin(angle) * distance - i * 20;
+            ripples.push(new Ripple(x, y, coralConfig));
+            
+            // Add sub-branches
+            if (i > 2) {
+              const subAngle1 = angle + 0.5;
+              const subAngle2 = angle - 0.5;
+              const subDist = 25;
+              
+              ripples.push(new Ripple(
+                x + Math.cos(subAngle1) * subDist, 
+                y + Math.sin(subAngle1) * subDist, 
+                coralConfig
+              ));
+              ripples.push(new Ripple(
+                x + Math.cos(subAngle2) * subDist, 
+                y + Math.sin(subAngle2) * subDist, 
+                coralConfig
+              ));
+            }
+          }, branch * 100 + i * 120);
+        }
+      }
+    }
+    
     class Ripple {
       constructor(x, y, config) {
         this.x = x;
@@ -144,7 +355,13 @@
         this.speed = config.speed;
         this.intensity = config.intensity;
         this.pattern = config.pattern;
+        this.isReverse = config.speed < 0; // Check if reverse ripple
         this.rings = [];
+        
+        // For reverse ripples, start with max radius
+        if (this.isReverse) {
+          this.startRadius = 300;
+        }
         
         // Create rings based on configuration
         for (let i = 0; i < config.rings; i++) {
@@ -165,11 +382,22 @@
           if (ringTime < 0) return;
           
           const ringProgress = ringTime / this.maxTime;
-          const radius = ringTime * this.speed;
+          
+          // Calculate radius (reverse ripples contract inward)
+          let radius;
+          if (this.isReverse) {
+            radius = this.startRadius - (ringTime * Math.abs(this.speed));
+            if (radius <= 0) return;
+          } else {
+            radius = ringTime * this.speed;
+          }
           
           // Different alpha decay based on pattern
           let alpha;
           switch(this.pattern) {
+            case 'reverse':
+              alpha = Math.max(0, ringProgress * this.intensity * 1.2);
+              break;
             case 'burst':
               alpha = Math.max(0, (1 - ringProgress * 1.5) * this.intensity);
               break;
@@ -186,6 +414,9 @@
           // Different amplitude based on pattern
           let amplitude;
           switch(this.pattern) {
+            case 'reverse':
+              amplitude = 3 * ringProgress * Math.sin(ringProgress * Math.PI);
+              break;
             case 'burst':
               amplitude = 4 * (1 - ringProgress) * Math.sin(ringProgress * Math.PI * 2);
               break;
@@ -237,10 +468,104 @@
       }
     }
     
+    // Easter egg tracking
+    let easterEggSequence = '';
+    let easterEggTimeout = null;
+    
     // Create ripple when a letter is pressed
     document.addEventListener('keydown', e => {
       const letter = e.key.toUpperCase();
+      
+      // Handle spacebar - massive splash
+      if (e.key === ' ') {
+        e.preventDefault();
+        playChord([261.63, 329.63, 392.00, 523.25]); // C major chord
+        
+        const centerX = width / 2;
+        const centerY = height / 2;
+        
+        // Create multiple ripples in a circle pattern
+        for (let i = 0; i < 12; i++) {
+          const angle = (i / 12) * Math.PI * 2;
+          const distance = 100;
+          const x = centerX + Math.cos(angle) * distance;
+          const y = centerY + Math.sin(angle) * distance;
+          
+          setTimeout(() => {
+            const config = { 
+              color: 'rgba(255,255,255', 
+              speed: 3.5, 
+              intensity: 1.0, 
+              rings: 6, 
+              pattern: 'burst' 
+            };
+            ripples.push(new Ripple(x, y, config));
+          }, i * 30);
+        }
+        
+        // Center explosion
+        const config = { 
+          color: 'rgba(255,200,100', 
+          speed: 4, 
+          intensity: 1.2, 
+          rings: 8, 
+          pattern: 'burst' 
+        };
+        ripples.push(new Ripple(centerX, centerY, config));
+        return;
+      }
+      
       if (!/^[A-Z]$/.test(letter)) return;
+      
+      // Track easter egg sequences
+      easterEggSequence += letter;
+      clearTimeout(easterEggTimeout);
+      easterEggTimeout = setTimeout(() => {
+        easterEggSequence = '';
+      }, 1000);
+      
+      // Check for easter eggs
+      if (easterEggSequence.includes('TSUNAMI')) {
+        triggerTsunami();
+        easterEggSequence = '';
+        return;
+      }
+      
+      if (easterEggSequence.includes('TORNADO')) {
+        triggerTornado();
+        easterEggSequence = '';
+        return;
+      }
+      
+      if (easterEggSequence.includes('CURRENT')) {
+        triggerCurrent();
+        easterEggSequence = '';
+        return;
+      }
+      
+      if (easterEggSequence.includes('CORAL')) {
+        triggerCoral();
+        easterEggSequence = '';
+        return;
+      }
+      
+      if (easterEggSequence.includes('WAVE')) {
+        triggerWave();
+        easterEggSequence = '';
+        return;
+      }
+      
+      if (easterEggSequence.includes('STORM')) {
+        triggerStorm();
+        easterEggSequence = '';
+        return;
+      }
+      
+      if (easterEggSequence.includes('DEEP')) {
+        triggerDeep();
+        easterEggSequence = '';
+        return;
+      }
       
       // Play sound
       const frequency = notes[letter];
@@ -255,12 +580,26 @@
       ripples.push(new Ripple(x, y, config));
     });
     
-    // Click to create ripples
+    // Click to create ripples (with shift modifier for reverse ripples)
     canvas.addEventListener('click', e => {
       // Play middle C for clicks
       playSound(523.25);
       
-      const config = rippleTypes.default;
+      let config;
+      
+      // Reverse ripple with shift key
+      if (e.shiftKey) {
+        config = {
+          color: 'rgba(255,100,255',
+          speed: -2.5, // Negative speed for reverse effect
+          intensity: 0.9,
+          rings: 6,
+          pattern: 'reverse'
+        };
+      } else {
+        config = rippleTypes.default;
+      }
+      
       ripples.push(new Ripple(e.clientX, e.clientY, config));
     });
     
