@@ -3,13 +3,59 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Musical Water Ripples</title>
+<title>Welcome to the symphony of the ocean!</title>
 <style>
-  body {
+ body {
     margin: 0;
     overflow: hidden;
-    background: radial-gradient(circle at center, #003366 0%, #000814 100%);
+    background: linear-gradient(135deg, #001f3f, #003d5c, #00628d, #0088be);
+    background-size: 400% 400%;
+    animation: waterFlow 15s ease infinite;
     font-family: sans-serif;
+  }
+  
+  @keyframes waterFlow {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+  
+  body::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+      radial-gradient(ellipse at 20% 30%, rgba(0, 150, 255, 0.3) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 70%, rgba(0, 200, 255, 0.25) 0%, transparent 50%),
+      radial-gradient(ellipse at 40% 80%, rgba(100, 200, 255, 0.2) 0%, transparent 50%);
+    animation: waterShimmer 10s ease-in-out infinite;
+    pointer-events: none;
+  }
+  
+  @keyframes waterShimmer {
+    0%, 100% { opacity: 0.6; transform: scale(1) translate(0, 0); }
+    50% { opacity: 0.8; transform: scale(1.1) translate(20px, -10px); }
+  }
+  
+  body::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+      linear-gradient(transparent 0%, rgba(0, 50, 100, 0.3) 50%, transparent 100%);
+    animation: waterWave 8s ease-in-out infinite;
+    pointer-events: none;
+  }
+  
+  @keyframes waterWave {
+    0%, 100% { transform: translateY(0) scaleY(1); }
+    50% { transform: translateY(-20px) scaleY(1.05); }
   }
   h1 {
     position: absolute;
@@ -20,15 +66,92 @@
     text-shadow: 0 0 10px #000;
     z-index: 10;
   }
+  h2 {
+    position: absolute;
+    top: 55px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: skyblue;
+    text-shadow: 0 0 10px #000;
+    z-index: 8;
+    }
   .info {
     position: absolute;
-    bottom: 20px;
+    bottom: 12px;
     left: 50%;
     transform: translateX(-50%);
     color: rgba(255,255,255,0.7);
     font-size: 14px;
     text-align: center;
     z-index: 10;
+    transition: opacity 1s ease-in-out;
+  }
+  
+  .cheat-sheet {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 30, 60, 0.95);
+    border: 2px solid rgba(100, 200, 255, 0.5);
+    border-radius: 15px;
+    padding: 30px;
+    color: white;
+    z-index: 100;
+    display: none;
+    max-width: 600px;
+    box-shadow: 0 0 30px rgba(0, 150, 255, 0.5);
+  }
+  
+  .cheat-sheet.visible {
+    display: block;
+    animation: fadeIn 0.3s ease-in;
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translate(-50%, -50%) scale(0.9); }
+    to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  }
+  
+  .cheat-sheet h3 {
+    margin-top: 0;
+    color: #00d4ff;
+    text-align: center;
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
+  
+  .cheat-sheet .section {
+    margin-bottom: 20px;
+  }
+  
+  .cheat-sheet .section-title {
+    color: #00aaff;
+    font-weight: bold;
+    margin-bottom: 8px;
+    font-size: 16px;
+  }
+  
+  .cheat-sheet .commands {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    font-size: 14px;
+  }
+  
+  .cheat-sheet .command {
+    color: rgba(255, 255, 255, 0.8);
+  }
+  
+  .cheat-sheet .command strong {
+    color: #66ddff;
+  }
+  
+  .cheat-sheet .close-hint {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.6);
   }
   canvas {
     display: block;
@@ -36,8 +159,47 @@
 </style>
 </head>
 <body>
-  <h1>Musical Water Ripples</h1>
-  <div class="info">Welcome to the symphony of the ocean!</div>
+  <h1>Welcome to the symphony of the ocean!</h1>
+  <h2><em></em></h2>
+  <div class="info" id="info">Create your own aquatic symphony!</div>
+  <div class="cheat-sheet" id="cheatSheet">
+    <h3>🌊 Ocean Symphony Guide 🌊</h3>
+    
+    <div class="section">
+      <div class="section-title">Basic Controls:</div>
+      <div class="commands">
+        <div class="command"><strong>A-Z Keys:</strong> Create ripples with sounds</div>
+        <div class="command"><strong>Click:</strong> Create ripple at cursor</div>
+        <div class="command"><strong>Shift+Click:</strong> Reverse ripple</div>
+        <div class="command"><strong>Space:</strong> Massive splash!</div>
+      </div>
+    </div>
+    
+    <div class="section">
+      <div class="section-title">Secret Ocean Words (Type these!):</div>
+      <div class="commands">
+        <div class="command"><strong>WAVE</strong> - Sweeping wave</div>
+        <div class="command"><strong>STORM</strong> - Chaotic storm</div>
+        <div class="command"><strong>TSUNAMI</strong> - Giant wave</div>
+        <div class="command"><strong>TORNADO</strong> - Spiral vortex</div>
+        <div class="command"><strong>CURRENT</strong> - Flowing current</div>
+        <div class="command"><strong>CORAL</strong> - Branching coral</div>
+        <div class="command"><strong>DEEP</strong> - Deep ocean</div>
+        <div class="command"><strong>FISH</strong> - Small splashes</div>
+        <div class="command"><strong>DOLPHINS</strong> - Jumping dolphins</div>
+        <div class="command"><strong>SHELL</strong> - Shell pattern</div>
+        <div class="command"><strong>SHARK</strong> - Predator chase</div>
+        <div class="command"><strong>WHALE</strong> - Whale tail splash</div>
+        <div class="command"><strong>BEACH</strong> - Beach waves</div>
+        <div class="command"><strong>WHIRLPOOL</strong> - Swirling vortex</div>
+        <div class="command"><strong>WATERFALL</strong> - Cascading water</div>
+        <div class="command"><strong>BUBBLES</strong> - Rising bubbles</div>
+        <div class="command"><strong>DRIFT</strong> - Drifting effect</div>
+      </div>
+    </div>
+    
+    <div class="close-hint">Press Tab again to close</div>
+  </div>
   <canvas id="pond"></canvas>
   <script>
     const canvas = document.getElementById('pond');
@@ -51,6 +213,44 @@
     });
     
     const ripples = [];
+    
+    // Rotating info text
+    const infoTexts = [
+      "Create your own aquatic symphony!",
+      "Try typing some words!",
+      "What words do you associate with water?",
+      "Who lives in the sea?",
+      "You absolutely don't want this to happen when you're out sailing.",
+      "If you really don't know...",
+      "Try pressing tab."
+    ];
+    let currentInfoIndex = 0;
+    const infoElement = document.getElementById('info');
+    
+    function rotateInfoText() {
+      infoElement.style.opacity = '0';
+      
+      setTimeout(() => {
+        currentInfoIndex = (currentInfoIndex + 1) % infoTexts.length;
+        infoElement.textContent = infoTexts[currentInfoIndex];
+        infoElement.style.opacity = '1';
+      }, 1000);
+    }
+    
+    setInterval(rotateInfoText, 10000);
+    
+    // Cheat sheet toggle
+    const cheatSheet = document.getElementById('cheatSheet');
+    let cheatSheetVisible = false;
+    
+    function toggleCheatSheet() {
+      cheatSheetVisible = !cheatSheetVisible;
+      if (cheatSheetVisible) {
+        cheatSheet.classList.add('visible');
+      } else {
+        cheatSheet.classList.remove('visible');
+      }
+    }
     
     // Audio context for generating sounds
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -345,6 +545,403 @@
       }
     }
     
+    // Easter egg: Fish effect
+    function triggerFish() {
+      playChord([523.25, 659.25, 783.99], 0.8);
+      
+      const fishConfig = {
+        color: 'rgba(100,200,255',
+        speed: 2.2,
+        intensity: 0.6,
+        rings: 3,
+        pattern: 'ripple'
+      };
+      
+      // School of fish moving together
+      const schoolSize = 15;
+      const schoolCenterX = width * 0.2;
+      const schoolCenterY = height * 0.5;
+      
+      for (let i = 0; i < 30; i++) {
+        setTimeout(() => {
+          // Move the entire school together
+          const progress = i / 29;
+          const centerX = schoolCenterX + progress * width * 0.6;
+          const centerY = schoolCenterY + Math.sin(progress * Math.PI * 2) * 80;
+          
+          // Individual fish within the school
+          for (let j = 0; j < schoolSize; j++) {
+            const offsetX = (Math.random() - 0.5) * 60;
+            const offsetY = (Math.random() - 0.5) * 40;
+            const x = centerX + offsetX;
+            const y = centerY + offsetY;
+            
+            setTimeout(() => {
+              playSound(800 + Math.random() * 400, 0.1);
+              ripples.push(new Ripple(x, y, fishConfig));
+            }, j * 20);
+          }
+        }, i * 150);
+      }
+    }
+    
+    // Easter egg: Dolphins effect
+    function triggerDolphins() {
+      playChord([659.25, 783.99, 987.77], 1.2);
+      
+      const dolphinConfig = {
+        color: 'rgba(150,200,255',
+        speed: 3.5,
+        intensity: 0.9,
+        rings: 5,
+        pattern: 'burst'
+      };
+      
+      // Dolphins jumping in arcs
+      const numDolphins = 5;
+      for (let d = 0; d < numDolphins; d++) {
+        const startX = (d / numDolphins) * width;
+        
+        for (let i = 0; i < 8; i++) {
+          setTimeout(() => {
+            const progress = i / 7;
+            const x = startX + progress * 200;
+            const y = height * 0.5 - Math.sin(progress * Math.PI) * 150;
+            playSound(600 + i * 50, 0.2);
+            ripples.push(new Ripple(x, y, dolphinConfig));
+          }, d * 600 + i * 80);
+        }
+      }
+    }
+    
+    // Easter egg: Shell effect
+    function triggerShell() {
+      playChord([392.00, 493.88, 587.33, 698.46], 2.0);
+      
+      const shellConfig = {
+        color: 'rgba(255,220,180',
+        speed: 2.0,
+        intensity: 0.8,
+        rings: 8,
+        pattern: 'smooth'
+      };
+      
+      const centerX = width / 2;
+      const centerY = height / 2;
+      
+      // Create scallop shell pattern with radiating ribs
+      const numRibs = 12;
+      
+      for (let rib = 0; rib < numRibs; rib++) {
+        const angle = (rib / numRibs) * Math.PI - Math.PI / 2; // Fan shape from bottom
+        
+        for (let i = 0; i < 15; i++) {
+          setTimeout(() => {
+            const distance = i * 15;
+            const x = centerX + Math.cos(angle) * distance;
+            const y = centerY + Math.sin(angle) * distance;
+            ripples.push(new Ripple(x, y, shellConfig));
+          }, rib * 80 + i * 40);
+        }
+      }
+      
+      // Add curved bottom edge
+      for (let i = 0; i < 20; i++) {
+        setTimeout(() => {
+          const angle = (i / 19) * Math.PI - Math.PI / 2;
+          const radius = 180;
+          const x = centerX + Math.cos(angle) * radius;
+          const y = centerY + Math.sin(angle) * radius;
+          ripples.push(new Ripple(x, y, shellConfig));
+        }, numRibs * 80 + i * 30);
+      }
+    }
+    
+    // Easter egg: Shark effect
+    function triggerShark() {
+      playChord([130.81, 164.81, 196.00, 246.94], 2.5);
+      
+      const sharkConfig = {
+        color: 'rgba(80,80,120',
+        speed: 5,
+        intensity: 1.2,
+        rings: 8,
+        pattern: 'wave'
+      };
+      
+      const preyConfig = {
+        color: 'rgba(200,200,255',
+        speed: 3,
+        intensity: 0.7,
+        rings: 4,
+        pattern: 'burst'
+      };
+      
+      // School of small fish swimming together
+      const schoolX = width * 0.5;
+      const schoolY = height * 0.5;
+      
+      // Fish fleeing in panic - scattered in all directions
+      for (let i = 0; i < 20; i++) {
+        setTimeout(() => {
+          const angle = (i / 20) * Math.PI * 2;
+          const distance = i * 15;
+          const x = schoolX + Math.cos(angle) * distance;
+          const y = schoolY + Math.sin(angle) * distance;
+          playSound(900 + Math.random() * 200, 0.1);
+          ripples.push(new Ripple(x, y, preyConfig));
+        }, i * 60);
+      }
+      
+      // Shark approaching from behind - fast pursuit
+      setTimeout(() => {
+        const startX = width * 0.1;
+        const startY = height * 0.5;
+        
+        for (let i = 0; i < 25; i++) {
+          setTimeout(() => {
+            const progress = i / 24;
+            // Shark accelerates towards the school
+            const acceleration = progress * progress;
+            const x = startX + acceleration * (schoolX - startX) * 1.3;
+            const y = startY + (schoolY - startY) * progress;
+            playSound(150 + i * 8, 0.25);
+            ripples.push(new Ripple(x, y, sharkConfig));
+          }, i * 70);
+        }
+      }, 400);
+    }
+    
+    // Easter egg: Whale effect
+    function triggerWhale() {
+      playChord([65.41, 82.41, 98.00, 130.81], 3.0);
+      
+      const whaleConfig = {
+        color: 'rgba(50,100,150',
+        speed: 6,
+        intensity: 1.5,
+        rings: 12,
+        pattern: 'burst'
+      };
+      
+      const centerX = width / 2;
+      const centerY = height * 0.6;
+      
+      // Whale tail - two-lobed fluke shape
+      setTimeout(() => {
+        playSound(80, 1.5);
+        
+        // Center divot
+        ripples.push(new Ripple(centerX, centerY, whaleConfig));
+        
+        // Left lobe - curved outward
+        for (let i = 0; i < 8; i++) {
+          setTimeout(() => {
+            const angle = Math.PI * 0.6 + (i / 7) * Math.PI * 0.3;
+            const distance = 80 + i * 15;
+            const x = centerX + Math.cos(angle) * distance;
+            const y = centerY + Math.sin(angle) * distance;
+            ripples.push(new Ripple(x, y, whaleConfig));
+          }, i * 60);
+        }
+        
+        // Right lobe - curved outward
+        for (let i = 0; i < 8; i++) {
+          setTimeout(() => {
+            const angle = Math.PI * 1.4 - (i / 7) * Math.PI * 0.3;
+            const distance = 80 + i * 15;
+            const x = centerX + Math.cos(angle) * distance;
+            const y = centerY + Math.sin(angle) * distance;
+            ripples.push(new Ripple(x, y, whaleConfig));
+          }, i * 60);
+        }
+        
+        // Splash waves radiating outward
+        for (let i = 0; i < 12; i++) {
+          setTimeout(() => {
+            const angle = (i / 12) * Math.PI * 2;
+            const distance = 150 + i * 20;
+            const x = centerX + Math.cos(angle) * distance;
+            const y = centerY + Math.sin(angle) * distance;
+            ripples.push(new Ripple(x, y, whaleConfig));
+          }, 300 + i * 50);
+        }
+      }, 200);
+    }
+    
+    // Easter egg: Beach effect
+    function triggerBeach() {
+      playChord([349.23, 392.00, 440.00], 2.5);
+      
+      const beachConfig = {
+        color: 'rgba(255,230,150',
+        speed: 2.5,
+        intensity: 0.8,
+        rings: 6,
+        pattern: 'wave'
+      };
+      
+      // Wave coming from right, splashing and receding
+      const numWaves = 8;
+      
+      for (let wave = 0; wave < numWaves; wave++) {
+        // Wave approaching (fade in from right)
+        for (let i = 0; i < 20; i++) {
+          setTimeout(() => {
+            const progress = i / 19;
+            const x = width - progress * width * 0.6;
+            const y = (wave / numWaves) * height;
+            
+            // Intensity increases as wave comes in
+            const waveConfigFadeIn = {
+              ...beachConfig,
+              intensity: beachConfig.intensity * progress
+            };
+            
+            ripples.push(new Ripple(x, y, waveConfigFadeIn));
+          }, wave * 800 + i * 30);
+        }
+        
+        // Wave receding (fade out to right)
+        for (let i = 0; i < 15; i++) {
+          setTimeout(() => {
+            const progress = i / 14;
+            const x = width * 0.4 + progress * width * 0.6;
+            const y = (wave / numWaves) * height;
+            
+            // Intensity decreases as wave recedes
+            const waveConfigFadeOut = {
+              ...beachConfig,
+              intensity: beachConfig.intensity * (1 - progress)
+            };
+            
+            ripples.push(new Ripple(x, y, waveConfigFadeOut));
+          }, wave * 800 + 600 + i * 25);
+        }
+      }
+    }
+    
+    // Easter egg: Whirlpool effect
+    function triggerWhirlpool() {
+      playChord([392.00, 440.00, 493.88, 587.33], 3.0);
+      
+      const whirlpoolConfig = {
+        color: 'rgba(100,150,200',
+        speed: 3,
+        intensity: 1.0,
+        rings: 6,
+        pattern: 'wave'
+      };
+      
+      const centerX = width / 2;
+      const centerY = height / 2;
+      
+      // Spiral inward
+      for (let i = 0; i < 60; i++) {
+        setTimeout(() => {
+          const angle = i * 0.8;
+          const radius = (60 - i) * 5;
+          const x = centerX + Math.cos(angle) * radius;
+          const y = centerY + Math.sin(angle) * radius;
+          playSound(300 + i * 10, 0.1);
+          ripples.push(new Ripple(x, y, whirlpoolConfig));
+        }, i * 50);
+      }
+    }
+    
+    // Easter egg: Waterfall effect
+    function triggerWaterfall() {
+      playChord([523.25, 659.25, 783.99], 3.0);
+      
+      const waterfallConfig = {
+        color: 'rgba(200,230,255',
+        speed: 4,
+        intensity: 0.9,
+        rings: 5,
+        pattern: 'smooth'
+      };
+      
+      // Multiple vertical streams falling straight down
+      const numStreams = 8;
+      const streamWidth = width * 0.6;
+      const startX = width * 0.2;
+      
+      for (let stream = 0; stream < numStreams; stream++) {
+        const x = startX + (stream / (numStreams - 1)) * streamWidth;
+        
+        // Droplets falling from top to bottom in straight line
+        for (let i = 0; i < 25; i++) {
+          setTimeout(() => {
+            const y = (i / 24) * height;
+            playSound(800 + Math.random() * 400, 0.15);
+            ripples.push(new Ripple(x, y, waterfallConfig));
+          }, stream * 100 + i * 60);
+        }
+      }
+    }
+    
+    // Easter egg: Bubbles effect
+    function triggerBubbles() {
+      playChord([783.99, 987.77, 1174.66], 2.0);
+      
+      // Rising bubbles that grow as they float up
+      for (let i = 0; i < 25; i++) {
+        setTimeout(() => {
+          const x = width * 0.2 + Math.random() * width * 0.6;
+          const startY = height * 0.8 + Math.random() * height * 0.2;
+          
+          // Each bubble rises and grows
+          for (let j = 0; j < 12; j++) {
+            setTimeout(() => {
+              const riseProgress = j / 11;
+              const y = startY - riseProgress * height * 0.7;
+              
+              // Bubble grows as it rises
+              const bubbleSize = 1 + riseProgress * 2;
+              
+              // Slight horizontal drift
+              const drift = Math.sin(riseProgress * Math.PI * 3) * 30;
+              
+              const bubbleConfig = {
+                color: 'rgba(200,240,255',
+                speed: 1.0 + bubbleSize * 0.5,
+                intensity: 0.5 + riseProgress * 0.3,
+                rings: Math.floor(3 + bubbleSize),
+                pattern: 'smooth'
+              };
+              
+              playSound(1000 + riseProgress * 800, 0.08);
+              ripples.push(new Ripple(x + drift, y, bubbleConfig));
+            }, j * 120);
+          }
+        }, i * 180);
+      }
+    }
+    
+    // Easter egg: Drift effect
+    function triggerDrift() {
+      playChord([261.63, 293.66, 329.63, 349.23], 4.0);
+      
+      const driftConfig = {
+        color: 'rgba(150,180,200',
+        speed: 2.0,
+        intensity: 0.7,
+        rings: 5,
+        pattern: 'smooth'
+      };
+      
+      // Slow drifting pattern
+      for (let i = 0; i < 40; i++) {
+        setTimeout(() => {
+          const progress = i / 39;
+          const x = progress * width;
+          const y = height / 2 + Math.sin(progress * Math.PI * 3) * 100 + Math.cos(progress * Math.PI * 5) * 50;
+          playSound(300 + progress * 200, 0.3);
+          ripples.push(new Ripple(x, y, driftConfig));
+        }, i * 200);
+      }
+    }
+    
     class Ripple {
       constructor(x, y, config) {
         this.x = x;
@@ -474,6 +1071,13 @@
     
     // Create ripple when a letter is pressed
     document.addEventListener('keydown', e => {
+      // Handle Tab key for cheat sheet
+      if (e.key === 'Tab') {
+        e.preventDefault();
+        toggleCheatSheet();
+        return;
+      }
+      
       const letter = e.key.toUpperCase();
       
       // Handle spacebar - massive splash
@@ -537,8 +1141,26 @@
         return;
       }
       
+      if (easterEggSequence.includes('WATERFALL')) {
+        triggerWaterfall();
+        easterEggSequence = '';
+        return;
+      }
+      
+      if (easterEggSequence.includes('WHIRLPOOL')) {
+        triggerWhirlpool();
+        easterEggSequence = '';
+        return;
+      }
+      
       if (easterEggSequence.includes('CURRENT')) {
         triggerCurrent();
+        easterEggSequence = '';
+        return;
+      }
+      
+      if (easterEggSequence.includes('DOLPHINS')) {
+        triggerDolphins();
         easterEggSequence = '';
         return;
       }
@@ -549,8 +1171,50 @@
         return;
       }
       
+      if (easterEggSequence.includes('BUBBLES')) {
+        triggerBubbles();
+        easterEggSequence = '';
+        return;
+      }
+      
+      if (easterEggSequence.includes('WHALE')) {
+        triggerWhale();
+        easterEggSequence = '';
+        return;
+      }
+      
+      if (easterEggSequence.includes('SHARK')) {
+        triggerShark();
+        easterEggSequence = '';
+        return;
+      }
+      
+      if (easterEggSequence.includes('BEACH')) {
+        triggerBeach();
+        easterEggSequence = '';
+        return;
+      }
+      
+      if (easterEggSequence.includes('SHELL')) {
+        triggerShell();
+        easterEggSequence = '';
+        return;
+      }
+      
+      if (easterEggSequence.includes('DRIFT')) {
+        triggerDrift();
+        easterEggSequence = '';
+        return;
+      }
+      
       if (easterEggSequence.includes('WAVE')) {
         triggerWave();
+        easterEggSequence = '';
+        return;
+      }
+      
+      if (easterEggSequence.includes('FISH')) {
+        triggerFish();
         easterEggSequence = '';
         return;
       }
