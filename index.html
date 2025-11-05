@@ -795,17 +795,17 @@
         pattern: 'wave'
       };
       
-      // Waves coming from right side only, horizontal motion
+      // Waves coming from right side only, horizontal motion at same height
       const numWaves = 12;
+      const centerY = height / 2;
       
       for (let wave = 0; wave < numWaves; wave++) {
-        const yPos = (wave / numWaves) * height;
-        
-        // Wave approaching from right to left
+        // Wave approaching from right to left at center height
         for (let i = 0; i < 25; i++) {
           setTimeout(() => {
             const progress = i / 24;
             const x = width - progress * width * 0.7;
+            const y = centerY + (Math.random() - 0.5) * 80; // slight vertical variation
             
             // Intensity increases as wave comes in
             const waveConfigFadeIn = {
@@ -813,7 +813,7 @@
               intensity: beachConfig.intensity * Math.min(1, progress * 2)
             };
             
-            ripples.push(new Ripple(x, yPos, waveConfigFadeIn));
+            ripples.push(new Ripple(x, y, waveConfigFadeIn));
           }, wave * 400 + i * 30);
         }
         
@@ -822,6 +822,7 @@
           setTimeout(() => {
             const progress = i / 19;
             const x = width * 0.3 + progress * width * 0.7;
+            const y = centerY + (Math.random() - 0.5) * 80;
             
             // Intensity decreases as wave recedes
             const waveConfigFadeOut = {
@@ -829,7 +830,7 @@
               intensity: beachConfig.intensity * (1 - progress)
             };
             
-            ripples.push(new Ripple(x, yPos, waveConfigFadeOut));
+            ripples.push(new Ripple(x, y, waveConfigFadeOut));
           }, wave * 400 + 750 + i * 25);
         }
       }
@@ -973,51 +974,48 @@
       const rectWidth = 120;
       const rectHeight = 160;
       
-      // Draw rectangle outline
+      // Create entire rectangle at once
+      const points = [];
+      
       // Top edge
       for (let i = 0; i < 15; i++) {
-        setTimeout(() => {
-          const x = centerX - rectWidth/2 + (i / 14) * rectWidth;
-          const y = centerY - rectHeight/2;
-          ripples.push(new Ripple(x, y, spongeConfig));
-        }, i * 40);
+        const x = centerX - rectWidth/2 + (i / 14) * rectWidth;
+        const y = centerY - rectHeight/2;
+        points.push({x, y});
       }
       
       // Right edge
-      for (let i = 0; i < 15; i++) {
-        setTimeout(() => {
-          const x = centerX + rectWidth/2;
-          const y = centerY - rectHeight/2 + (i / 14) * rectHeight;
-          ripples.push(new Ripple(x, y, spongeConfig));
-        }, 600 + i * 40);
+      for (let i = 1; i < 15; i++) {
+        const x = centerX + rectWidth/2;
+        const y = centerY - rectHeight/2 + (i / 14) * rectHeight;
+        points.push({x, y});
       }
       
       // Bottom edge
-      for (let i = 0; i < 15; i++) {
-        setTimeout(() => {
-          const x = centerX + rectWidth/2 - (i / 14) * rectWidth;
-          const y = centerY + rectHeight/2;
-          ripples.push(new Ripple(x, y, spongeConfig));
-        }, 1200 + i * 40);
+      for (let i = 1; i < 15; i++) {
+        const x = centerX + rectWidth/2 - (i / 14) * rectWidth;
+        const y = centerY + rectHeight/2;
+        points.push({x, y});
       }
       
       // Left edge
-      for (let i = 0; i < 15; i++) {
-        setTimeout(() => {
-          const x = centerX - rectWidth/2;
-          const y = centerY + rectHeight/2 - (i / 14) * rectHeight;
-          ripples.push(new Ripple(x, y, spongeConfig));
-        }, 1800 + i * 40);
+      for (let i = 1; i < 14; i++) {
+        const x = centerX - rectWidth/2;
+        const y = centerY + rectHeight/2 - (i / 14) * rectHeight;
+        points.push({x, y});
       }
       
-      // Fill with porous texture
-      for (let i = 0; i < 20; i++) {
-        setTimeout(() => {
-          const x = centerX + (Math.random() - 0.5) * rectWidth * 0.8;
-          const y = centerY + (Math.random() - 0.5) * rectHeight * 0.8;
-          ripples.push(new Ripple(x, y, spongeConfig));
-        }, 2400 + i * 60);
+      // Add porous texture points
+      for (let i = 0; i < 25; i++) {
+        const x = centerX + (Math.random() - 0.5) * rectWidth * 0.8;
+        const y = centerY + (Math.random() - 0.5) * rectHeight * 0.8;
+        points.push({x, y});
       }
+      
+      // Create all ripples at once
+      points.forEach(point => {
+        ripples.push(new Ripple(point.x, point.y, spongeConfig));
+      });
     }
     
     // Easter egg: Seastar effect
@@ -1025,10 +1023,10 @@
       playChord([523.25, 659.25, 783.99], 1.8);
       
       const seastarConfig = {
-        color: 'rgba(255,150,180',
-        speed: 2.2,
+        color: 'rgba(255,120,100',
+        speed: 1.5,
         intensity: 0.9,
-        rings: 6,
+        rings: 4,
         pattern: 'burst'
       };
       
@@ -1037,39 +1035,72 @@
       const numArms = 5;
       const armLength = 100;
       
-      // Center
-      ripples.push(new Ripple(centerX, centerY, seastarConfig));
+      // Large center body
+      for (let i = 0; i < 20; i++) {
+        const angle = (i / 20) * Math.PI * 2;
+        const radius = 30;
+        const x = centerX + Math.cos(angle) * radius;
+        const y = centerY + Math.sin(angle) * radius;
+        ripples.push(new Ripple(x, y, seastarConfig));
+      }
       
-      // Create 5 arms radiating outward
+      // Fill center with more ripples
+      for (let i = 0; i < 15; i++) {
+        const x = centerX + (Math.random() - 0.5) * 50;
+        const y = centerY + (Math.random() - 0.5) * 50;
+        setTimeout(() => {
+          ripples.push(new Ripple(x, y, seastarConfig));
+        }, i * 20);
+      }
+      
+      // Create 5 thick, rounded arms
       for (let arm = 0; arm < numArms; arm++) {
         const angle = (arm / numArms) * Math.PI * 2 - Math.PI / 2;
         
-        for (let i = 0; i < 12; i++) {
+        // Each arm with thickness
+        for (let i = 0; i < 15; i++) {
           setTimeout(() => {
-            const progress = i / 11;
-            const distance = progress * armLength;
+            const progress = i / 14;
+            const distance = 30 + progress * armLength;
             
-            // Main arm
-            const x = centerX + Math.cos(angle) * distance;
-            const y = centerY + Math.sin(angle) * distance;
-            ripples.push(new Ripple(x, y, seastarConfig));
+            // Main centerline of arm
+            const centerArmX = centerX + Math.cos(angle) * distance;
+            const centerArmY = centerY + Math.sin(angle) * distance;
+            ripples.push(new Ripple(centerArmX, centerArmY, seastarConfig));
             
-            // Arm width (tapers to point)
-            const width = (1 - progress * 0.7) * 25;
-            if (i > 2 && i < 10) {
-              const perpAngle = angle + Math.PI / 2;
+            // Arm width - stays thick throughout, tapers only at tip
+            const armWidth = progress < 0.8 ? 35 : 35 * (1 - (progress - 0.8) / 0.2);
+            const perpAngle = angle + Math.PI / 2;
+            
+            // Create thickness along arm
+            for (let w = 1; w <= 3; w++) {
+              const offsetDist = (w / 3) * armWidth * 0.5;
+              
               ripples.push(new Ripple(
-                x + Math.cos(perpAngle) * width * 0.5,
-                y + Math.sin(perpAngle) * width * 0.5,
+                centerArmX + Math.cos(perpAngle) * offsetDist,
+                centerArmY + Math.sin(perpAngle) * offsetDist,
                 seastarConfig
               ));
               ripples.push(new Ripple(
-                x - Math.cos(perpAngle) * width * 0.5,
-                y - Math.sin(perpAngle) * width * 0.5,
+                centerArmX - Math.cos(perpAngle) * offsetDist,
+                centerArmY - Math.sin(perpAngle) * offsetDist,
                 seastarConfig
               ));
             }
-          }, arm * 150 + i * 50);
+            
+            // Add rounded tip
+            if (i === 14) {
+              for (let t = 0; t < 8; t++) {
+                const tipAngle = angle + (t / 7 - 0.5) * Math.PI * 0.5;
+                const tipDist = 15;
+                ripples.push(new Ripple(
+                  centerArmX + Math.cos(tipAngle) * tipDist,
+                  centerArmY + Math.sin(tipAngle) * tipDist,
+                  seastarConfig
+                ));
+              }
+            }
+          }, arm * 120 + i * 40);
         }
       }
     }
