@@ -185,9 +185,9 @@
         <div class="command"><strong>CURRENT</strong> - Flowing current</div>
         <div class="command"><strong>CORAL</strong> - Branching coral</div>
         <div class="command"><strong>DEEP</strong> - Deep ocean</div>
-        <div class="command"><strong>FISH</strong> - Small splashes</div>
+        <div class="command"><strong>FISH</strong> - School of fish</div>
         <div class="command"><strong>DOLPHINS</strong> - Jumping dolphins</div>
-        <div class="command"><strong>SHELL</strong> - Shell pattern</div>
+        <div class="command"><strong>SHELL</strong> - Scallop shell</div>
         <div class="command"><strong>SHARK</strong> - Predator chase</div>
         <div class="command"><strong>WHALE</strong> - Whale tail splash</div>
         <div class="command"><strong>BEACH</strong> - Beach waves</div>
@@ -195,6 +195,9 @@
         <div class="command"><strong>WATERFALL</strong> - Cascading water</div>
         <div class="command"><strong>BUBBLES</strong> - Rising bubbles</div>
         <div class="command"><strong>DRIFT</strong> - Drifting effect</div>
+        <div class="command"><strong>SPONGE</strong> - Yellow rectangle</div>
+        <div class="command"><strong>SEASTAR</strong> - Pink starfish</div>
+        <div class="command"><strong>SEAWEED</strong> - Swaying seaweed</div>
       </div>
     </div>
     
@@ -218,8 +221,8 @@
     const infoTexts = [
       "Create your own aquatic symphony!",
       "Try typing some words!",
-      "What words do you associate with water?",
-      "Who lives in the sea?",
+      "What words do you associate with the word ocean?",
+      "Who lives in the water?",
       "You absolutely don't want this to happen when you're out sailing.",
       "If you really don't know...",
       "Try pressing tab."
@@ -557,31 +560,31 @@
         pattern: 'ripple'
       };
       
-      // School of fish moving together
-      const schoolSize = 15;
+      // School of fish moving together with more spread
+      const schoolSize = 10;
       const schoolCenterX = width * 0.2;
       const schoolCenterY = height * 0.5;
       
-      for (let i = 0; i < 30; i++) {
+      for (let i = 0; i < 40; i++) {
         setTimeout(() => {
           // Move the entire school together
-          const progress = i / 29;
+          const progress = i / 39;
           const centerX = schoolCenterX + progress * width * 0.6;
           const centerY = schoolCenterY + Math.sin(progress * Math.PI * 2) * 80;
           
-          // Individual fish within the school
+          // Individual fish within the school - more spread out
           for (let j = 0; j < schoolSize; j++) {
-            const offsetX = (Math.random() - 0.5) * 60;
-            const offsetY = (Math.random() - 0.5) * 40;
+            const offsetX = (Math.random() - 0.5) * 100;
+            const offsetY = (Math.random() - 0.5) * 70;
             const x = centerX + offsetX;
             const y = centerY + offsetY;
             
             setTimeout(() => {
               playSound(800 + Math.random() * 400, 0.1);
               ripples.push(new Ripple(x, y, fishConfig));
-            }, j * 20);
+            }, j * 30);
           }
-        }, i * 150);
+        }, i * 120);
       }
     }
     
@@ -677,23 +680,28 @@
         pattern: 'burst'
       };
       
-      // School of small fish swimming together
+      // Fish fleeing in small schools outward
       const schoolX = width * 0.5;
       const schoolY = height * 0.5;
+      const numSchools = 7;
       
-      // Fish fleeing in panic - scattered in all directions
-      for (let i = 0; i < 20; i++) {
-        setTimeout(() => {
-          const angle = (i / 20) * Math.PI * 2;
-          const distance = i * 15;
-          const x = schoolX + Math.cos(angle) * distance;
-          const y = schoolY + Math.sin(angle) * distance;
-          playSound(900 + Math.random() * 200, 0.1);
-          ripples.push(new Ripple(x, y, preyConfig));
-        }, i * 60);
+      for (let school = 0; school < numSchools; school++) {
+        const angle = (school / numSchools) * Math.PI * 2;
+        
+        // Each small school fleeing in a direction
+        for (let i = 0; i < 8; i++) {
+          setTimeout(() => {
+            const distance = i * 25;
+            const spread = (Math.random() - 0.5) * 20;
+            const x = schoolX + Math.cos(angle) * distance + Math.cos(angle + Math.PI/2) * spread;
+            const y = schoolY + Math.sin(angle) * distance + Math.sin(angle + Math.PI/2) * spread;
+            playSound(900 + Math.random() * 200, 0.1);
+            ripples.push(new Ripple(x, y, preyConfig));
+          }, school * 80 + i * 50);
+        }
       }
       
-      // Shark approaching from behind - fast pursuit
+      // Shark approaching from behind
       setTimeout(() => {
         const startX = width * 0.1;
         const startY = height * 0.5;
@@ -701,7 +709,6 @@
         for (let i = 0; i < 25; i++) {
           setTimeout(() => {
             const progress = i / 24;
-            // Shark accelerates towards the school
             const acceleration = progress * progress;
             const x = startX + acceleration * (schoolX - startX) * 1.3;
             const y = startY + (schoolY - startY) * progress;
@@ -727,33 +734,40 @@
       const centerX = width / 2;
       const centerY = height * 0.6;
       
-      // Whale tail - two-lobed fluke shape
+      // Whale tail - two distinct lobes with small center visible
       setTimeout(() => {
         playSound(80, 1.5);
         
-        // Center divot
-        ripples.push(new Ripple(centerX, centerY, whaleConfig));
-        
-        // Left lobe - curved outward
-        for (let i = 0; i < 8; i++) {
+        // Small center part of tail (narrow section)
+        for (let i = 0; i < 3; i++) {
           setTimeout(() => {
-            const angle = Math.PI * 0.6 + (i / 7) * Math.PI * 0.3;
-            const distance = 80 + i * 15;
-            const x = centerX + Math.cos(angle) * distance;
-            const y = centerY + Math.sin(angle) * distance;
-            ripples.push(new Ripple(x, y, whaleConfig));
-          }, i * 60);
+            const y = centerY - i * 15;
+            ripples.push(new Ripple(centerX, y, whaleConfig));
+          }, i * 40);
         }
         
-        // Right lobe - curved outward
-        for (let i = 0; i < 8; i++) {
+        // Left lobe - more pronounced curve
+        for (let i = 0; i < 10; i++) {
           setTimeout(() => {
-            const angle = Math.PI * 1.4 - (i / 7) * Math.PI * 0.3;
-            const distance = 80 + i * 15;
+            const progress = i / 9;
+            const angle = Math.PI * 0.55 + progress * Math.PI * 0.4;
+            const distance = 60 + progress * 100;
             const x = centerX + Math.cos(angle) * distance;
             const y = centerY + Math.sin(angle) * distance;
             ripples.push(new Ripple(x, y, whaleConfig));
-          }, i * 60);
+          }, i * 50);
+        }
+        
+        // Right lobe - more pronounced curve
+        for (let i = 0; i < 10; i++) {
+          setTimeout(() => {
+            const progress = i / 9;
+            const angle = Math.PI * 1.45 - progress * Math.PI * 0.4;
+            const distance = 60 + progress * 100;
+            const x = centerX + Math.cos(angle) * distance;
+            const y = centerY + Math.sin(angle) * distance;
+            ripples.push(new Ripple(x, y, whaleConfig));
+          }, i * 50);
         }
         
         // Splash waves radiating outward
@@ -781,33 +795,33 @@
         pattern: 'wave'
       };
       
-      // Wave coming from right, splashing and receding
-      const numWaves = 8;
+      // Waves coming from right side only, horizontal motion
+      const numWaves = 12;
       
       for (let wave = 0; wave < numWaves; wave++) {
-        // Wave approaching (fade in from right)
-        for (let i = 0; i < 20; i++) {
+        const yPos = (wave / numWaves) * height;
+        
+        // Wave approaching from right to left
+        for (let i = 0; i < 25; i++) {
           setTimeout(() => {
-            const progress = i / 19;
-            const x = width - progress * width * 0.6;
-            const y = (wave / numWaves) * height;
+            const progress = i / 24;
+            const x = width - progress * width * 0.7;
             
             // Intensity increases as wave comes in
             const waveConfigFadeIn = {
               ...beachConfig,
-              intensity: beachConfig.intensity * progress
+              intensity: beachConfig.intensity * Math.min(1, progress * 2)
             };
             
-            ripples.push(new Ripple(x, y, waveConfigFadeIn));
-          }, wave * 800 + i * 30);
+            ripples.push(new Ripple(x, yPos, waveConfigFadeIn));
+          }, wave * 400 + i * 30);
         }
         
-        // Wave receding (fade out to right)
-        for (let i = 0; i < 15; i++) {
+        // Wave receding back to right
+        for (let i = 0; i < 20; i++) {
           setTimeout(() => {
-            const progress = i / 14;
-            const x = width * 0.4 + progress * width * 0.6;
-            const y = (wave / numWaves) * height;
+            const progress = i / 19;
+            const x = width * 0.3 + progress * width * 0.7;
             
             // Intensity decreases as wave recedes
             const waveConfigFadeOut = {
@@ -815,8 +829,8 @@
               intensity: beachConfig.intensity * (1 - progress)
             };
             
-            ripples.push(new Ripple(x, y, waveConfigFadeOut));
-          }, wave * 800 + 600 + i * 25);
+            ripples.push(new Ripple(x, yPos, waveConfigFadeOut));
+          }, wave * 400 + 750 + i * 25);
         }
       }
     }
@@ -884,37 +898,37 @@
     function triggerBubbles() {
       playChord([783.99, 987.77, 1174.66], 2.0);
       
-      // Rising bubbles that grow as they float up
-      for (let i = 0; i < 25; i++) {
+      // Rising bubbles that grow slowly as they float up
+      for (let i = 0; i < 20; i++) {
         setTimeout(() => {
           const x = width * 0.2 + Math.random() * width * 0.6;
-          const startY = height * 0.8 + Math.random() * height * 0.2;
+          const startY = height * 0.85 + Math.random() * height * 0.15;
           
-          // Each bubble rises and grows
-          for (let j = 0; j < 12; j++) {
+          // Each bubble rises and grows slowly
+          for (let j = 0; j < 10; j++) {
             setTimeout(() => {
-              const riseProgress = j / 11;
-              const y = startY - riseProgress * height * 0.7;
+              const riseProgress = j / 9;
+              const y = startY - riseProgress * height * 0.6;
               
-              // Bubble grows as it rises
+              // Bubble grows gradually
               const bubbleSize = 1 + riseProgress * 2;
               
-              // Slight horizontal drift
-              const drift = Math.sin(riseProgress * Math.PI * 3) * 30;
+              // Gentle horizontal drift
+              const drift = Math.sin(riseProgress * Math.PI * 2) * 40;
               
               const bubbleConfig = {
                 color: 'rgba(200,240,255',
-                speed: 1.0 + bubbleSize * 0.5,
-                intensity: 0.5 + riseProgress * 0.3,
-                rings: Math.floor(3 + bubbleSize),
+                speed: 0.8 + bubbleSize * 0.3,
+                intensity: 0.4 + riseProgress * 0.2,
+                rings: Math.floor(2 + bubbleSize),
                 pattern: 'smooth'
               };
               
-              playSound(1000 + riseProgress * 800, 0.08);
+              playSound(1000 + riseProgress * 600, 0.06);
               ripples.push(new Ripple(x + drift, y, bubbleConfig));
-            }, j * 120);
+            }, j * 200);
           }
-        }, i * 180);
+        }, i * 250);
       }
     }
     
@@ -939,6 +953,314 @@
           playSound(300 + progress * 200, 0.3);
           ripples.push(new Ripple(x, y, driftConfig));
         }, i * 200);
+      }
+    }
+    
+    // Easter egg: Sponge effect
+    function triggerSponge() {
+      playChord([392.00, 440.00, 493.88], 1.5);
+      
+      const spongeConfig = {
+        color: 'rgba(255,220,100',
+        speed: 2.0,
+        intensity: 0.8,
+        rings: 5,
+        pattern: 'smooth'
+      };
+      
+      const centerX = width / 2;
+      const centerY = height / 2;
+      const rectWidth = 120;
+      const rectHeight = 160;
+      
+      // Draw rectangle outline
+      // Top edge
+      for (let i = 0; i < 15; i++) {
+        setTimeout(() => {
+          const x = centerX - rectWidth/2 + (i / 14) * rectWidth;
+          const y = centerY - rectHeight/2;
+          ripples.push(new Ripple(x, y, spongeConfig));
+        }, i * 40);
+      }
+      
+      // Right edge
+      for (let i = 0; i < 15; i++) {
+        setTimeout(() => {
+          const x = centerX + rectWidth/2;
+          const y = centerY - rectHeight/2 + (i / 14) * rectHeight;
+          ripples.push(new Ripple(x, y, spongeConfig));
+        }, 600 + i * 40);
+      }
+      
+      // Bottom edge
+      for (let i = 0; i < 15; i++) {
+        setTimeout(() => {
+          const x = centerX + rectWidth/2 - (i / 14) * rectWidth;
+          const y = centerY + rectHeight/2;
+          ripples.push(new Ripple(x, y, spongeConfig));
+        }, 1200 + i * 40);
+      }
+      
+      // Left edge
+      for (let i = 0; i < 15; i++) {
+        setTimeout(() => {
+          const x = centerX - rectWidth/2;
+          const y = centerY + rectHeight/2 - (i / 14) * rectHeight;
+          ripples.push(new Ripple(x, y, spongeConfig));
+        }, 1800 + i * 40);
+      }
+      
+      // Fill with porous texture
+      for (let i = 0; i < 20; i++) {
+        setTimeout(() => {
+          const x = centerX + (Math.random() - 0.5) * rectWidth * 0.8;
+          const y = centerY + (Math.random() - 0.5) * rectHeight * 0.8;
+          ripples.push(new Ripple(x, y, spongeConfig));
+        }, 2400 + i * 60);
+      }
+    }
+    
+    // Easter egg: Seastar effect
+    function triggerSeastar() {
+      playChord([523.25, 659.25, 783.99], 1.8);
+      
+      const seastarConfig = {
+        color: 'rgba(255,150,180',
+        speed: 2.2,
+        intensity: 0.9,
+        rings: 6,
+        pattern: 'burst'
+      };
+      
+      const centerX = width / 2;
+      const centerY = height / 2;
+      const numArms = 5;
+      const armLength = 100;
+      
+      // Center
+      ripples.push(new Ripple(centerX, centerY, seastarConfig));
+      
+      // Create 5 arms radiating outward
+      for (let arm = 0; arm < numArms; arm++) {
+        const angle = (arm / numArms) * Math.PI * 2 - Math.PI / 2;
+        
+        for (let i = 0; i < 12; i++) {
+          setTimeout(() => {
+            const progress = i / 11;
+            const distance = progress * armLength;
+            
+            // Main arm
+            const x = centerX + Math.cos(angle) * distance;
+            const y = centerY + Math.sin(angle) * distance;
+            ripples.push(new Ripple(x, y, seastarConfig));
+            
+            // Arm width (tapers to point)
+            const width = (1 - progress * 0.7) * 25;
+            if (i > 2 && i < 10) {
+              const perpAngle = angle + Math.PI / 2;
+              ripples.push(new Ripple(
+                x + Math.cos(perpAngle) * width * 0.5,
+                y + Math.sin(perpAngle) * width * 0.5,
+                seastarConfig
+              ));
+              ripples.push(new Ripple(
+                x - Math.cos(perpAngle) * width * 0.5,
+                y - Math.sin(perpAngle) * width * 0.5,
+                seastarConfig
+              ));
+            }
+          }, arm * 150 + i * 50);
+        }
+      }
+    }
+    
+    // Easter egg: Seaweed effect
+    function triggerSeaweed() {
+      playChord([293.66, 349.23, 415.30], 3.0);
+      
+      const seaweedConfig = {
+        color: 'rgba(100,200,100',
+        speed: 1.8,
+        intensity: 0.8,
+        rings: 5,
+        pattern: 'smooth'
+      };
+      
+      const numStrands = 6;
+      const baseY = height * 0.8;
+      
+      for (let strand = 0; strand < numStrands; strand++) {
+        const baseX = width * 0.3 + (strand / (numStrands - 1)) * width * 0.4;
+        const swayOffset = strand * 0.5;
+        
+        // Each strand grows upward with swaying motion
+        for (let i = 0; i < 20; i++) {
+          setTimeout(() => {
+            const progress = i / 19;
+            const y = baseY - progress * height * 0.5;
+            
+            // Swaying motion
+            const sway = Math.sin(progress * Math.PI * 4 + swayOffset) * 40;
+            const x = baseX + sway;
+            
+            playSound(300 + progress * 200, 0.15);
+            ripples.push(new Ripple(x, y, seaweedConfig));
+          }, strand * 200 + i * 80);
+        }
+      }
+    }
+    
+    // Easter egg: Sponge effect
+    function triggerSponge() {
+      playChord([392.00, 440.00, 493.88], 1.5);
+      
+      const spongeConfig = {
+        color: 'rgba(255,220,100',
+        speed: 2.0,
+        intensity: 0.8,
+        rings: 5,
+        pattern: 'smooth'
+      };
+      
+      const centerX = width / 2;
+      const centerY = height / 2;
+      const rectWidth = 120;
+      const rectHeight = 160;
+      
+      // Draw rectangle outline
+      // Top edge
+      for (let i = 0; i < 15; i++) {
+        setTimeout(() => {
+          const x = centerX - rectWidth/2 + (i / 14) * rectWidth;
+          const y = centerY - rectHeight/2;
+          ripples.push(new Ripple(x, y, spongeConfig));
+        }, i * 40);
+      }
+      
+      // Right edge
+      for (let i = 0; i < 15; i++) {
+        setTimeout(() => {
+          const x = centerX + rectWidth/2;
+          const y = centerY - rectHeight/2 + (i / 14) * rectHeight;
+          ripples.push(new Ripple(x, y, spongeConfig));
+        }, 600 + i * 40);
+      }
+      
+      // Bottom edge
+      for (let i = 0; i < 15; i++) {
+        setTimeout(() => {
+          const x = centerX + rectWidth/2 - (i / 14) * rectWidth;
+          const y = centerY + rectHeight/2;
+          ripples.push(new Ripple(x, y, spongeConfig));
+        }, 1200 + i * 40);
+      }
+      
+      // Left edge
+      for (let i = 0; i < 15; i++) {
+        setTimeout(() => {
+          const x = centerX - rectWidth/2;
+          const y = centerY + rectHeight/2 - (i / 14) * rectHeight;
+          ripples.push(new Ripple(x, y, spongeConfig));
+        }, 1800 + i * 40);
+      }
+      
+      // Fill with porous texture
+      for (let i = 0; i < 20; i++) {
+        setTimeout(() => {
+          const x = centerX + (Math.random() - 0.5) * rectWidth * 0.8;
+          const y = centerY + (Math.random() - 0.5) * rectHeight * 0.8;
+          ripples.push(new Ripple(x, y, spongeConfig));
+        }, 2400 + i * 60);
+      }
+    }
+    
+    // Easter egg: Seastar effect
+    function triggerSeastar() {
+      playChord([523.25, 659.25, 783.99], 1.8);
+      
+      const seastarConfig = {
+        color: 'rgba(255,150,180',
+        speed: 2.2,
+        intensity: 0.9,
+        rings: 6,
+        pattern: 'burst'
+      };
+      
+      const centerX = width / 2;
+      const centerY = height / 2;
+      const numArms = 5;
+      const armLength = 100;
+      
+      // Center
+      ripples.push(new Ripple(centerX, centerY, seastarConfig));
+      
+      // Create 5 arms radiating outward
+      for (let arm = 0; arm < numArms; arm++) {
+        const angle = (arm / numArms) * Math.PI * 2 - Math.PI / 2;
+        
+        for (let i = 0; i < 12; i++) {
+          setTimeout(() => {
+            const progress = i / 11;
+            const distance = progress * armLength;
+            
+            // Main arm
+            const x = centerX + Math.cos(angle) * distance;
+            const y = centerY + Math.sin(angle) * distance;
+            ripples.push(new Ripple(x, y, seastarConfig));
+            
+            // Arm width (tapers to point)
+            const width = (1 - progress * 0.7) * 25;
+            if (i > 2 && i < 10) {
+              const perpAngle = angle + Math.PI / 2;
+              ripples.push(new Ripple(
+                x + Math.cos(perpAngle) * width * 0.5,
+                y + Math.sin(perpAngle) * width * 0.5,
+                seastarConfig
+              ));
+              ripples.push(new Ripple(
+                x - Math.cos(perpAngle) * width * 0.5,
+                y - Math.sin(perpAngle) * width * 0.5,
+                seastarConfig
+              ));
+            }
+          }, arm * 150 + i * 50);
+        }
+      }
+    }
+    
+    // Easter egg: Seaweed effect
+    function triggerSeaweed() {
+      playChord([293.66, 349.23, 415.30], 3.0);
+      
+      const seaweedConfig = {
+        color: 'rgba(100,200,100',
+        speed: 1.8,
+        intensity: 0.8,
+        rings: 5,
+        pattern: 'smooth'
+      };
+      
+      const numStrands = 6;
+      const baseY = height * 0.8;
+      
+      for (let strand = 0; strand < numStrands; strand++) {
+        const baseX = width * 0.3 + (strand / (numStrands - 1)) * width * 0.4;
+        const swayOffset = strand * 0.5;
+        
+        // Each strand grows upward with swaying motion
+        for (let i = 0; i < 20; i++) {
+          setTimeout(() => {
+            const progress = i / 19;
+            const y = baseY - progress * height * 0.5;
+            
+            // Swaying motion
+            const sway = Math.sin(progress * Math.PI * 4 + swayOffset) * 40;
+            const x = baseX + sway;
+            
+            playSound(300 + progress * 200, 0.15);
+            ripples.push(new Ripple(x, y, seaweedConfig));
+          }, strand * 200 + i * 80);
+        }
       }
     }
     
@@ -1153,8 +1475,26 @@
         return;
       }
       
+      if (easterEggSequence.includes('SEAWEED')) {
+        triggerSeaweed();
+        easterEggSequence = '';
+        return;
+      }
+      
+      if (easterEggSequence.includes('SEASTAR')) {
+        triggerSeastar();
+        easterEggSequence = '';
+        return;
+      }
+      
       if (easterEggSequence.includes('CURRENT')) {
         triggerCurrent();
+        easterEggSequence = '';
+        return;
+      }
+      
+      if (easterEggSequence.includes('SPONGE')) {
+        triggerSponge();
         easterEggSequence = '';
         return;
       }
